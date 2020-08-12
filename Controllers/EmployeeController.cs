@@ -157,7 +157,38 @@ namespace Payroll.Controllers
             return View();
         
         }
+        [HttpGet]
+        public IActionResult Detail(int ID)
+        {
+            var employee = _employeeService.GetEmployeebyId(ID);
+            if (employee == null)
+            {
+                return NotFound();
+            }
+            EmployeeDetailViewModel model = new EmployeeDetailViewModel()
+            {
+                ID = employee.ID,
+                EmployeeNO = employee.EmployeeNO,
+                FullName = employee.FirstName + (string.IsNullOrEmpty(employee.MiddleName) ? " " : " " + employee.MiddleName[0] + ".").ToUpper() + employee.LastName,
+                Gender = employee.Gender,
+                Email = employee.Email,
+                DOB = employee.DOB,
 
+                NationalInsuranceNo = employee.NationalInsuranceNo,
+                PaymentMethod = employee.PaymentMethod,
+                StudentLoan = employee.StudentLoan,
+                UnionMember = employee.UnionMember,
+                Address = employee.Address,
+                City = employee.City,
+                Phone = employee.Phone,
+                PostCode = employee.PostCode,
+                Designation = employee.Designation,
+                ImageURL = employee.ImageURL,
+                DateJoined = employee.DateJoined
+
+            };
+            return View(model);
+        }
         public static async Task<string> FileUrl(string FileName, string FileExtension , string UploadDir , string WebRootPath , IFormFile FileUrl)
         {
             FileName = DateTime.UtcNow.ToString("yymmssfff") + FileName + FileExtension;
@@ -165,6 +196,30 @@ namespace Payroll.Controllers
              var path = Path.Combine(WebRootPath, UploadDir, FileName);
              await FileUrl.CopyToAsync(new FileStream(path, FileMode.Create));
             return "/" + UploadDir + "/" + FileName;
+        }
+        [HttpGet]
+        public IActionResult Delete(int ID)
+        {
+            var employee = _employeeService.GetEmployeebyId(ID);
+            if (employee == null)
+            {
+                return NotFound();
+            }
+            var model = new EmployeeDeleteViewModel()
+            {
+
+                ID = employee.ID,
+                FullName = employee.FirstName + (string.IsNullOrEmpty(employee.MiddleName) ? " " : " " + employee.MiddleName[0] + ".").ToUpper() + employee.LastName
+
+            };
+            return View(model);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete( EmployeeDeleteViewModel model)
+        {
+            await _employeeService.Delete(model.ID);
+            return RedirectToAction(nameof(Index));
         }
     }
 }
