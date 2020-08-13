@@ -20,12 +20,12 @@ namespace Payroll.Controllers
     {
         private readonly IEmployeeService _employeeService;
         private readonly IWebHostEnvironment _hostingEnvironment;
-        public EmployeeController(EmployeeService employeeService , IWebHostEnvironment hostingEnvironment)
+        public EmployeeController(IEmployeeService employeeService , IWebHostEnvironment hostingEnvironment)
         {
             _employeeService = employeeService;
             _hostingEnvironment = hostingEnvironment;
         }
-
+        [HttpGet]
         public IActionResult Index()
         {
             var employees = _employeeService.GetAllEmployees().Select(employee => new EmployeeIndexViewModel
